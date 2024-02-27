@@ -21,6 +21,7 @@
     "react-router-dom": "^6.21.3",
     "react-slick": "^0.30.0",
     "react-slick-carousel": "^0.14.9",
+    "react-toastify": "^10.0.4",
     "slick-carousel": "^1.8.1"
   },
   "devDependencies": {

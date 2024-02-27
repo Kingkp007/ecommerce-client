@@ -1,111 +1,137 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectCartItems } from '../redux/features/cartSlice'
+import axios from 'axios';
+import { MdDelete } from "react-icons/md";
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const Checkout = () => {
+  const dispatch = useDispatch();
+  const [cartItems, setCartItems] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    getCartItems()
+  }, [])
+
+  const userId = localStorage.getItem("userId")
+
+  const success = () => {
+    toast.success(`Oreder Placed`, {
+      position: 'top-center', // Set position to top center
+    });
+  };
+
+  const deleteItem = () => {
+    toast.success(`Item Deleted`, {
+      position: 'top-center', // Set position to top center
+    });
+  }
+  const deleteFail = () => {
+    toast.error(`Somethinng went wrong`, {
+      position: 'top-center', // Set position to top center
+    });
+  }
+
+  const getCartItems = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/orders/getItems?userId=${userId}`)
+      if (response.data.success) {
+        setCartItems(response.data.data);
+        console.log(response.data.data);
+      }
+    } catch (error) {
+      console.log('Error '+ error)
+    }
+  }
+
+  const handleDelete = async(prodId) =>{
+    try {
+      // alert(prodId);
+    const response = await axios.delete(`http://localhost:8080/api/v1/orders/delete-item?prodId=${prodId}&userId=${userId}`)
+    if(response.data.success){
+      // alert(`${prodId} deleted successfully`)
+      window.location.reload()
+      deleteItem();
+      // const newArr = cartItems.filter((ele) => ele._id != prodId);
+      // setCartItems(newArr);
+    }
+    } catch (error) {
+      console.log(error)
+      deleteFail();
+    }
+
+  }
+
   return (
     <div className="flex h-screen">
-      {/* Left side - Shipping Details Form */}
-      <div className="w-1/2 bg-gray-100 p-8">
-        <h2 className="text-2xl font-bold mb-4">Shipping Details</h2>
-        <form>
-          <div className="mb-4">
-            <label htmlFor="address" className="block text-sm font-medium text-gray-600">
-              Address
-            </label>
-            <input
-              type="text"
-              id="address"
-              name="address"
-              className="mt-1 p-2 w-full border border-gray-300 rounded"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="city" className="block text-sm font-medium text-gray-600">
-              City
-            </label>
-            <input
-              type="text"
-              id="city"
-              name="city"
-              className="mt-1 p-2 w-full border border-gray-300 rounded"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="state" className="block text-sm font-medium text-gray-600">
-              State
-            </label>
-            <input
-              type="text"
-              id="state"
-              name="state"
-              className="mt-1 p-2 w-full border border-gray-300 rounded"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="country" className="block text-sm font-medium text-gray-600">
-              Country
-            </label>
-            <input
-              type="text"
-              id="country"
-              name="country"
-              className="mt-1 p-2 w-full border border-gray-300 rounded"
-            />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="pincode" className="block text-sm font-medium text-gray-600">
-              Pincode
-            </label>
-            <input
-              type="text"
-              id="pincode"
-              name="pincode"
-              className="mt-1 p-2 w-full border border-gray-300 rounded"
-            />
-          </div>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Confirm Shipping
-          </button>
-        </form>
-      </div>
-
       {/* Right side - Order Summary */}
-      <div className="w-1/2 bg-gray-200 p-8">
+      <div className="w-full h-fit bg-gray-200 p-8">
         <h2 className="text-2xl font-bold mb-4">Order Summary</h2>
-        <div className="flex items-center mb-4">
-          <img
-            src="https://placekitten.com/100/100"
-            alt="Product"
-            className="mr-4 rounded"
-          />
-          <div>
-            <p className="font-semibold">Product Name</p>
-            <p className="text-gray-600">$19.99</p>
+        {cartItems.map((product) => (
+          <div key={product._id} className="flex items-center mb-4">    
+            <img
+              src={product.img}
+              alt="Product"
+              className="mr-4 rounded h-[100px] w-[70px]"
+            />
+            <div>
+              <p className="font-semibold">{product.name}</p>
+              <p className="text-gray-600">₹{product.price}</p>
+            </div>
+            <button
+              className="ml-auto text-red-600 hover:text-red-800 text-2xl"
+              onClick={() => handleDelete(product._id)}
+            >
+              {/* Dustbin logo or any other icon for remove */}
+              <MdDelete />
+            </button>
+          </div>
+        ))}
+
+        <div className="bg-gray-100 p-4 rounded-md shadow-md">
+
+          <div className="flex justify-between mb-2">
+            <span className="text-gray-700">Subtotal:</span>
+            <span className="font-bold text-gray-800">₹ {
+               cartItems.reduce((sum, item) => {
+                  return sum += item.price
+              }, 0)}</span>
+          </div>
+
+
+          <div className="flex justify-between mb-2">
+            <span className="text-gray-700">Shipping Charges:</span>
+            <span className="font-bold text-gray-800">₹ 110</span>
+          </div>
+
+
+          <div className="flex justify-between">
+            <span className="text-xl font-bold">Total Payable Amount:</span>
+            <span className="text-xl font-bold text-primary">₹ {
+               cartItems.reduce((sum, item) => {
+                  return sum += item.price
+              }, 110)}</span>
           </div>
         </div>
-        <div className="mb-4">
-          <label htmlFor="quantity" className="block text-sm font-medium text-gray-600">
-            Quantity
-          </label>
-          <select
-            id="quantity"
-            name="quantity"
-            className="mt-1 p-2 w-full border border-gray-300 rounded"
-          >
-            {[...Array(10).keys()].map((number) => (
-              <option key={number + 1} value={number + 1}>
-                {number + 1}
-              </option>
-            ))}
-          </select>
-        </div>
-        <button
+
+      <div className='flex justify-start mt-2'>
+      <button
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          onClick={() => {success(); navigate("/")}}
         >
           Confirm Order
         </button>
+        <button
+          className=" ml-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={() => navigate("/")}
+        >
+          Home
+        </button>
+      </div>
       </div>
     </div>
   );

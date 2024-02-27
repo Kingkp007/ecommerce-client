@@ -12,17 +12,20 @@ import Login from './pages/Login'
 import ProtectedRoutes from './components/Routes/ProtectedRoutes'
 import PublicRoutes from './components/Routes/PublicRoutes'
 import Checkout from './pages/Checkout'
+import Navbar from './components/Navbar/Navbar'
+import { ToastContainer, toast } from 'react-toastify';
 
 function App() {
   return (
     <>
       <BrowserRouter >
+      <ToastContainer />
         <Routes >
           <Route path="/" element={<ProtectedRoutes><HomePage /></ProtectedRoutes>} /> 
           <Route path='/all-products' element={<ProtectedRoutes><AllProducts /></ProtectedRoutes>} />
           <Route path='/list-product' element={<ProtectedRoutes><ProductListing /></ProtectedRoutes>} />
-          <Route path='/prod-dtl/:id' element={<ProtectedRoutes><ProductDetail /></ProtectedRoutes>} />
-          <Route path='/checkout' element={<Checkout />} />
+          <Route path='/prod-dtl/:id' element={<ProtectedRoutes><Navbar /><ProductDetail /></ProtectedRoutes>} />
+          <Route path='/checkout' element={<ProtectedRoutes><Checkout /></ProtectedRoutes>} />
           <Route path="/signup" element={<PublicRoutes><Signup /></PublicRoutes>} />
           <Route path="/login" element={<PublicRoutes><Login /></PublicRoutes>} />
         </Routes>

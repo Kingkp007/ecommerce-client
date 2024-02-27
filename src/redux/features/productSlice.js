@@ -10,6 +10,7 @@ const initialState = {
     currentPage: 1, //for pagination
     totalPages: 1,
     prodId:"",
+    ctgry : "",
 }
 
 // export slice =- provide name for later reference and provide initialState. Also provide reducers
@@ -31,17 +32,21 @@ export const productSlice = createSlice({
           },
           setProdId: (state,action) => {
             state.prodId = action.payload;
-          }
+          },
+          setCtgry : (state,action) => {
+            state.ctgry = action.payload;
+          },
     }
 })
 
 
 
-export const { setItems, setSearchTerm, setCurrentPage, setProdId } = productSlice.actions;
+export const { setItems, setSearchTerm, setCurrentPage, setProdId,setCtgry } = productSlice.actions;
 export const selectItems = (state) => state.product.items;
 export const selectSearchTerm = (state) => state.product.searchTerm;
 export const selectCurrentPage = (state) => state.product.currentPage;
 export const selectTotalPages = (state) => state.product.totalPages;
 export const selectProdId = (state) => state.product.prodId;
+export const selectCtgry = (state) => state.product.ctgry;
 
 export default productSlice.reducer;

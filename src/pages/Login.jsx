@@ -2,9 +2,26 @@ import React from 'react'
 import logo from '../assets/logo.png'
 import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
   const navigate = useNavigate();
+
+   const login = () => {
+    toast.success('Login Successful', {
+      position: 'top-center', // Set position to top center
+    });
+  };
+
+  const notifyError = () => {
+    toast.error('Please enter details correctly', {
+      position: 'top-center', // Set position to top center
+    });
+  };
+
+
+
   const handleSubmit = async(event) => {
     event.preventDefault();
     const email = event.target.email.value;
@@ -14,19 +31,24 @@ const Login = () => {
       if (response.data.success) {
         localStorage.setItem("token", response.data.token);
         localStorage.setItem("user-category", response.data.data.category)
+        localStorage.setItem("userId", response.data.data._id)
         console.log("Login Successfully");
         if(response.data.data.category === 'Seller'){
+          login();
           navigate('/list-product')
         }
         if(response.data.data.category === 'Buyer'){
+          login();
           navigate("/");
         }
         
       } else {
+        notifyError();
         console.log(response.data.message)
       }
     } catch (error) {
       console.log(error);
+      notifyError();
     }
 
   }

@@ -9,7 +9,7 @@ const ProductCard = ({id, img, title, rating,price,category,aosDelay}) => {
   const dispatch = useDispatch();
   const handliClick= () => {
     dispatch(setProdId(id));
-    alert(`You will be seeing product with id ${id}`)
+    // alert(`You will be seeing product with id ${id}`)
     navigate(`/prod-dtl/${id}`);
   }
 

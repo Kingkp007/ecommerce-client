@@ -5,7 +5,7 @@ import ProductCard from '../components/ProductCard/ProductCard';
 import Img2 from "../assets/women/women2.jpg";
 // import Pagination from '../components/Pagination/Pagination';
 import { useDispatch, useSelector } from 'react-redux';
-import { setItems, selectItems, selectCurrentPage, selectSearchTerm, selectProdId } from '../redux/features/productSlice';
+import { setItems, selectItems, selectCurrentPage, selectSearchTerm, selectProdId, selectCtgry } from '../redux/features/productSlice';
 
 
 
@@ -18,13 +18,19 @@ const AllProducts = () => {
   const items = useSelector(selectItems);
   // const currentPage = useSelector(selectCurrentPage);
   const searchTerm = useSelector(selectSearchTerm);
+  const category = useSelector(selectCtgry);
+  console.log(category);
   // const prodId = useSelector(selectProdId)
   
+
+  useEffect(() => {
+    getAllProducts();
+  }, [currentPage, dispatch,searchTerm, category])
 
   // get All Products
   const getAllProducts = async () => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/products/get-prod?page=${currentPage}&search=${searchTerm}`);
+      const response = await axios.get(`http://localhost:8080/api/v1/products/get-prod?page=${currentPage}&category=${category}&search=${searchTerm}`);
       const { data: { products, totalPages } } = response.data;
       if (response.data.success) {
         // console.log();
@@ -38,9 +44,6 @@ const AllProducts = () => {
 
   }
 
-  useEffect(() => {
-    getAllProducts();
-  }, [currentPage, dispatch,searchTerm])
 
 
 
@@ -68,7 +71,7 @@ const AllProducts = () => {
         <div className='col-span-3' >
           <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 place-items-center gap-5  mb-8">
             {allProducts.map((ele) => {
-              return (<ProductCard key={ele._id} id={ele._id} price={ele.price} category={ele.category} title={ele.name} aosDelay="400" img={Img2} rating={handleRating()} />)
+              return (<ProductCard key={ele._id} id={ele._id} price={ele.price} category={ele.category} title={ele.name} aosDelay="400" img={ele.img} rating={handleRating()} />)
             })}
           </div>
         </div>
